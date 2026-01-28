@@ -456,7 +456,7 @@ export default function ExperienceSection() {
                 "반응형 설계, 컴포넌트 시스템, 웹 접근성 준수",
                 "#3B82F6",
               ],
-              ["Dev & Pub", "React, JS(ES6+), SCSS, jQuery", "#60a5fa"],
+              ["Dev & Pub", "React, JavaScript(ES6+)TS, SCSS, jQuery", "#60a5fa"],
               [
                 "Design",
                 "Figma, Adobe XD, Photoshop, Rhino, Illustration",

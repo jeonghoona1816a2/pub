@@ -17,7 +17,8 @@ export default function StackSection() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
           {[
             ["⚡", "JavaScript/TS", "Primary Language"],
-            ["⚛️", "React", "Frontend"],
+            ["⚛️", "React", "Framework"],
+            ["🧊", "WebSquare", "Framework"],
             ["🔀", "Git", "Version Control"],
             ["🎨", "SCSS / SASS", "Styling"],
             ["🖥️", "HTML5", "Markup"],

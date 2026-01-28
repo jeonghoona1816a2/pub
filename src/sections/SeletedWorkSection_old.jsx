@@ -105,7 +105,7 @@ const portfolioImages = [
   {
     id: 11,
     category: "Identity",
-    title: "여권 커버 디자인 개선",
+    title: "여권 디자인 개선",
     desc: "실사용을 고려해 보안성과 상징성을 정리한 디자인 작업입니다.",
     img: passportDesign,
     subCategory: "시각디자인",
@@ -114,7 +114,7 @@ const portfolioImages = [
     id: 12,
     category: "Web Design",
     title: "브랜드 웹 디자인 02",
-    desc: "적용된 레이아웃으로 톤앤매너를 유지했습니다.",
+    desc: "운영 페이지에 적용된 레이아웃으로 톤앤매너를 유지했습니다.",
     img: webDesign2,
     subCategory: "web",
   },
@@ -122,7 +122,7 @@ const portfolioImages = [
     id: 13,
     category: "Web Design",
     title: "브랜드 웹 디자인 03",
-    desc: "히어로 섹션을 중심으로 시선을 모았습니다.",
+    desc: "운영 페이지의 히어로 섹션을 중심으로 시선을 모았습니다.",
     img: webDesign3,
     subCategory: "web",
   },
@@ -287,9 +287,9 @@ export default function PortfolioGallery() {
                     <h3 className="text-white text-xl md:text-3xl font-bold mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-75">
                       {work.title}
                     </h3>
-                    {/* <p className="text-slate-300 text-center max-w-lg text-xs md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">
+                    <p className="text-slate-300 text-center max-w-lg text-xs md:text-base transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-150">
                       {work.desc}
-                    </p> */}
+                    </p>
                   </div>
                 </div>
               </div>

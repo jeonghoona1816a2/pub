@@ -59,7 +59,7 @@ const projects = [
     id: "multi-system",
     title: "전자소송 포털 다수 시스템 구축 경험",
     desc:
-      "여러 전자소송 관련 시스템의 UI/UX 퍼블리싱을 수행하며, 일관된 화면 품질과 사용자 흐름을 유지했습니다.",
+      "여러 법원관련 시스템의 UI/UX 퍼블리싱을 수행하며, 일관된 화면 품질과 사용자 흐름을 유지했습니다.",
     featured: {
       variant: "wide",
       colSpan: "md:col-span-8",

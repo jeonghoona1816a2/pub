@@ -1,6 +1,6 @@
 ﻿import React from "react";
 
-import projects from "./projectsData";
+import projects from "./projectsData.jsx";
 
 export default function ProjectsSection() {
   const featuredCards = projects.filter((project) => project.featured);

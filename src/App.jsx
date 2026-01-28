@@ -6,7 +6,7 @@ import ContactSection from "./sections/ContactSection";
 import ExperienceSection from "./sections/ExperienceSection";
 import HeroSection from "./sections/HeroSection";
 import ProjectsSection from "./sections/ProjectsSection";
-// import SelectedWorkSection from "./sections/SelectedWorkSection";
+import SelectedWorkSection from "./sections/SelectedWorkSection";
 import StackSection from "./sections/StackSection";
 
 function App() {
@@ -189,7 +189,7 @@ function App() {
         <HeroSection />
         <AboutSection />
         <ProjectsSection />
-        {/* <SelectedWorkSection /> */}
+        <SelectedWorkSection />
         <StackSection />
         <ExperienceSection />
         <CertificationsSection />
