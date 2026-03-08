@@ -7,6 +7,7 @@ import ExperienceSection from "./sections/ExperienceSection";
 import HeroSection from "./sections/HeroSection";
 import ProjectsSection from "./sections/ProjectsSection";
 import SelectedWorkSection from "./sections/SelectedWorkSection";
+import SkillInventorySection from "./sections/SkillInventorySection";
 import StackSection from "./sections/StackSection";
 
 function App() {
@@ -191,6 +192,7 @@ function App() {
         <ProjectsSection />
         <SelectedWorkSection />
         <StackSection />
+        <SkillInventorySection />
         <ExperienceSection />
         <CertificationsSection />
         <ContactSection />

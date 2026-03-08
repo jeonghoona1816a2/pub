@@ -192,18 +192,50 @@ const portfolioImages = [
   },
 ];
 
+const STORAGE_KEY = "selected-work-items-v1";
+const ADMIN_PASSWORD =
+  import.meta.env.VITE_SELECTED_WORK_ADMIN_PASSWORD || "1234";
+
+const loadStoredItems = () => {
+  if (typeof window === "undefined") return portfolioImages;
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return portfolioImages;
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed) || parsed.length === 0) return portfolioImages;
+    return parsed;
+  } catch (error) {
+    return portfolioImages;
+  }
+};
+
 export default function PortfolioGallery() {
+  const [items, setItems] = useState(() => loadStoredItems());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isManuallyPaused, setIsManuallyPaused] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
   const isPaused = isManuallyPaused || isHovering;
+  const [adminStep, setAdminStep] = useState(null);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadCategory, setUploadCategory] = useState("");
+  const [uploadSubCategory, setUploadSubCategory] = useState("");
+  const [uploadFile, setUploadFile] = useState(null);
+  const [uploadError, setUploadError] = useState("");
 
   const nextSlide = useCallback(() => {
-    setCurrentIndex((prev) => (prev === portfolioImages.length - 1 ? 0 : prev + 1));
-  }, []);
+    setCurrentIndex((prev) => {
+      if (items.length === 0) return 0;
+      return prev === items.length - 1 ? 0 : prev + 1;
+    });
+  }, [items.length]);
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? portfolioImages.length - 1 : prev - 1));
+    setCurrentIndex((prev) => {
+      if (items.length === 0) return 0;
+      return prev === 0 ? items.length - 1 : prev - 1;
+    });
   };
 
   const togglePause = () => {
@@ -212,11 +244,102 @@ export default function PortfolioGallery() {
 
   useEffect(() => {
     let interval;
-    if (!isPaused) {
+    if (!isPaused && items.length > 1) {
       interval = setInterval(nextSlide, 4000);
     }
     return () => clearInterval(interval);
-  }, [nextSlide, isPaused]);
+  }, [nextSlide, isPaused, items.length]);
+
+  useEffect(() => {
+    if (currentIndex >= items.length && items.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [currentIndex, items.length]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch (error) {
+      // ignore storage errors (private mode, quota)
+    }
+  }, [items]);
+
+  const openAdmin = () => {
+    setPasswordInput("");
+    setPasswordError("");
+    setUploadError("");
+    setAdminStep("password");
+  };
+
+  const closeAdmin = () => {
+    setAdminStep(null);
+    setPasswordInput("");
+    setPasswordError("");
+    setUploadError("");
+    setUploadTitle("");
+    setUploadCategory("");
+    setUploadSubCategory("");
+    setUploadFile(null);
+  };
+
+  const handlePasswordSubmit = (event) => {
+    event.preventDefault();
+    if (passwordInput === ADMIN_PASSWORD) {
+      setPasswordError("");
+      setAdminStep("panel");
+    } else {
+      setPasswordError("비밀번호가 일치하지 않습니다.");
+    }
+  };
+
+  const handleAddItem = (event) => {
+    event.preventDefault();
+    if (!uploadFile) {
+      setUploadError("이미지 파일을 선택하세요.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const imageUrl = typeof reader.result === "string" ? reader.result : "";
+      if (!imageUrl) {
+        setUploadError("이미지 처리에 실패했습니다.");
+        return;
+      }
+      const newItem = {
+        id: Date.now(),
+        category: uploadCategory || "New Work",
+        title: uploadTitle || "Untitled",
+        desc: "",
+        img: imageUrl,
+        subCategory: uploadSubCategory || "",
+      };
+      setItems((prev) => [...prev, newItem]);
+      setUploadTitle("");
+      setUploadCategory("");
+      setUploadSubCategory("");
+      setUploadFile(null);
+      setUploadError("");
+    };
+    reader.onerror = () => setUploadError("이미지 처리에 실패했습니다.");
+    reader.readAsDataURL(uploadFile);
+  };
+
+  const moveItem = (index, direction) => {
+    setItems((prev) => {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= prev.length) return prev;
+      const nextItems = [...prev];
+      const temp = nextItems[index];
+      nextItems[index] = nextItems[targetIndex];
+      nextItems[targetIndex] = temp;
+      return nextItems;
+    });
+  };
+
+  const removeItem = (id) => {
+    setItems((prev) => prev.filter((item) => item.id !== id));
+  };
 
   return (
     <section className="py-12 md:py-16 bg-white">
@@ -226,6 +349,12 @@ export default function PortfolioGallery() {
             Portfolio <span className="text-slate-400 font-light">Archive</span>
           </h2>
           <div className="flex gap-2">
+            <button
+              onClick={openAdmin}
+              className="px-3 py-2 rounded-full border border-slate-200 text-xs font-semibold tracking-wide uppercase hover:bg-slate-50"
+            >
+              Manage
+            </button>
             <button
               onClick={togglePause}
               className="px-3 py-2 rounded-full border border-slate-200 text-xs font-semibold tracking-wide uppercase hover:bg-slate-50"
@@ -257,7 +386,7 @@ export default function PortfolioGallery() {
             className="flex transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
           >
-            {portfolioImages.map((work, idx) => (
+            {items.map((work, idx) => (
               <div key={work.id} className="min-w-full px-1">
                 <div
                   className={`
@@ -298,7 +427,7 @@ export default function PortfolioGallery() {
         </div>
 
         <div className="flex justify-center gap-2 mt-6">
-          {portfolioImages.map((_, i) => (
+          {items.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
@@ -309,6 +438,203 @@ export default function PortfolioGallery() {
           ))}
         </div>
       </div>
+
+      {adminStep && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm px-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="bg-white w-full max-w-3xl rounded-2xl shadow-xl border border-slate-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                  Selected Work Manager
+                </p>
+                <h3 className="text-lg font-bold text-slate-900">
+                  {adminStep === "password" ? "비밀번호 확인" : "이미지 업로드 & 순서 관리"}
+                </h3>
+              </div>
+              <button
+                onClick={closeAdmin}
+                className="text-slate-400 hover:text-slate-700"
+                aria-label="Close admin panel"
+              >
+                ✕
+              </button>
+            </div>
+
+            {adminStep === "password" && (
+              <form onSubmit={handlePasswordSubmit} className="px-6 py-8 space-y-4">
+                <p className="text-sm text-slate-500">
+                  관리 화면에 접근하려면 비밀번호를 입력하세요.
+                </p>
+                <input
+                  type="password"
+                  value={passwordInput}
+                  onChange={(event) => setPasswordInput(event.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  placeholder="비밀번호"
+                />
+                {passwordError && (
+                  <p className="text-sm text-red-500">{passwordError}</p>
+                )}
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={closeAdmin}
+                    className="px-4 py-2 rounded-full border border-slate-200 text-sm font-semibold"
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-full bg-slate-900 text-white text-sm font-semibold"
+                  >
+                    확인
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {adminStep === "panel" && (
+              <div className="px-6 py-6 space-y-6">
+                <form onSubmit={handleAddItem} className="space-y-4">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        이미지 업로드
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(event) => setUploadFile(event.target.files?.[0] || null)}
+                        className="w-full text-sm"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        타이틀
+                      </label>
+                      <input
+                        type="text"
+                        value={uploadTitle}
+                        onChange={(event) => setUploadTitle(event.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="예: New Branding"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        카테고리
+                      </label>
+                      <input
+                        type="text"
+                        value={uploadCategory}
+                        onChange={(event) => setUploadCategory(event.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="예: Branding"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        서브 카테고리
+                      </label>
+                      <input
+                        type="text"
+                        value={uploadSubCategory}
+                        onChange={(event) => setUploadSubCategory(event.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-200"
+                        placeholder="선택"
+                      />
+                    </div>
+                  </div>
+                  {uploadError && (
+                    <p className="text-sm text-red-500">{uploadError}</p>
+                  )}
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 rounded-full bg-slate-900 text-white text-sm font-semibold"
+                    >
+                      업로드 추가
+                    </button>
+                  </div>
+                </form>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-sm font-bold text-slate-900">오더 순서</h4>
+                    <span className="text-xs text-slate-400">
+                      위/아래 버튼으로 순서를 변경하세요.
+                    </span>
+                  </div>
+                  <div className="max-h-[300px] overflow-y-auto border border-slate-100 rounded-xl">
+                    {items.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 last:border-b-0"
+                      >
+                        <span className="text-xs font-semibold text-slate-400 w-6">
+                          {index + 1}
+                        </span>
+                        <img
+                          src={item.img}
+                          alt={item.title}
+                          className="w-14 h-10 object-cover rounded-md border border-slate-200"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-slate-900 truncate">
+                            {item.title || "Untitled"}
+                          </p>
+                          <p className="text-xs text-slate-400 truncate">
+                            {item.category}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => moveItem(index, -1)}
+                            disabled={index === 0}
+                            className="px-2 py-1 rounded-md border border-slate-200 text-xs disabled:opacity-40"
+                          >
+                            위
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveItem(index, 1)}
+                            disabled={index === items.length - 1}
+                            className="px-2 py-1 rounded-md border border-slate-200 text-xs disabled:opacity-40"
+                          >
+                            아래
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="px-2 py-1 rounded-md border border-red-200 text-xs text-red-500 hover:bg-red-50"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={closeAdmin}
+                    className="px-4 py-2 rounded-full border border-slate-200 text-sm font-semibold"
+                  >
+                    닫기
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
