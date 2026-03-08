@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
   ClientSideRowModelModule,
@@ -256,3 +256,4 @@ export default function SkillInventorySection() {
     </section>
   );
 }
+
