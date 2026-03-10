@@ -8,8 +8,8 @@ export default function Mstudy() {
     return (
         <div>
             {/* <GeneratorAsyncAwait /> */}
-            {/* <Promisestudy />
-            <Asyncbasic /> */}
+            {/* <Promisestudy /> */}
+            {/* <Asyncbasic /> */}
             {/* <Loopstatment /> */}
         </div>
     );

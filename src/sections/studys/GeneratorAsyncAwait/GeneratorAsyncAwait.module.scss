@@ -1,0 +1,14 @@
+.container {
+  padding: 0px;
+  background: #f4f4f4;
+  border-radius: 10px;
+  display: flex;
+   > div{ border: 1px solid;
+    padding: 10px;
+   }
+   > div:nth-child(1){width: 50px;}
+   > div:nth-child(2){width: 350px;}
+   > div:nth-child(3){width: 150px;}
+   > div:nth-child(4){width: 150px;}
+
+}

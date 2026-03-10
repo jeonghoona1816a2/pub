@@ -24,7 +24,7 @@ import { useEffect } from 'react';
 // rejected.catch(value => console.log(value))
 
 export default function Promisestudy() {
-    console.log('promise-study');
+    // console.log('promise-study');
     /**
      * 자바스크립트는 비동기 처리를 위한 하나의 패턴으로 콜백 함수를 사용한다.
      * 하지만 전통적인 콜백 패턴은 콜백 헬로 인해 가독성이 나쁘고 비동기 처리 중 발생한 에러의
@@ -177,8 +177,8 @@ export default function Promisestudy() {
     // .catch(error)
     // → Promise 체인의 모든 에러 처리
 
-    const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
-    const realUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+    // const wrongUrl = 'https://jsonplaceholder.typicode.com/xxx/1';
+    // const realUrl = 'https://jsonplaceholder.typicode.com/posts/1';
     // promiseGET(wrongUrl)
     //     .then(res => console.log(res), ero => console.error(ero))
 
@@ -203,9 +203,9 @@ export default function Promisestudy() {
     //     })
     //     .catch(er => console.error('catch가 잡음2-2', er));
 
-    console.log('promise-study - 프로미스 체이닝');
+    // console.log('promise-study - 프로미스 체이닝');
 
-    // const idUrl = 'https://jsonplaceholder.typicode.com';
+
 
     // promiseGET(`${idUrl}/posts/1`)
     //     .then(({ userId }) => { return (promiseGET(`${idUrl}/users/${userId}`)) })
@@ -215,28 +215,134 @@ export default function Promisestudy() {
     //     .then(userInfor => console.log(userInfor))
     //     .catch(er => console.log(er));
     // //체이닝 끝
-    console.log('promise-study - resolve,reject,all');
+    // console.log('promise-study - resolve,reject,all');
 
-    const promiseGET = url => {
-        return (
-            new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.open('GET', url)
-                xhr.send()
-                xhr.onload = () => {
-                    if (xhr.status === 200) {
-                        resolve(JSON.parse(xhr.response));
-                    }
-                    else { xhr.reject(new Error(xhr.status)) }
-                }
-            })
-        )
-    }
-    const githubIds = ['Bret', 'Samantha', 'Karianne', 'Antonette'];
-    Promise.all(githubIds.map(id => promiseGET(`http://api.github.com/users/${id}`)))
-        .then(users => users.map(user => user.name))
-        .then(console.log)
-        .catch(console.error)
+    // const promiseGET = url => {
+    //     return (
+    //         new Promise((resolve, reject) => {
+    //             const xhr = new XMLHttpRequest();
+    //             xhr.open('GET', url)
+    //             xhr.send()
+    //             xhr.onload = () => {
+    //                 if (xhr.status === 200) {
+    //                     resolve(JSON.parse(xhr.response));
+    //                 }
+    //                 else { xhr.reject(new Error(xhr.status)) }
+    //             }
+    //         })
+    //     )
+    // }
+    // const githubIds = ['Bret', 'Samantha', 'Karianne', 'Antonette'];
+    // Promise.all(githubIds.map(id => promiseGET(`http://api.github.com/users/${id}`)))
+    //     .then(users => users.map(user => user.name))
+    //     .then(console.log)
+    //     .catch(console.error)
+
+
+    // console.log('promise-study - fetch');
+    // // fetch(`${idUrl}todos/1`)
+    // //     .then(response => console.log(response));
+    // fetch('https://jsonplaceholder.typicode.com/todos/1')
+    //     .then(response => console.log(response));
+    // const idUrl = 'https://jsonplaceholder.typicode.com/posts/1';
+
+    // const wronUrl = 'https://jsonplaceholder.typicode.com/xxx/1'
+    /**1. */
+
+    // fetch(wronUrl)
+    //     .then(() => { return (console.log('1-then ok')) })
+    //     .catch(() => { return (console.log('1-catch error')) })
+
+    /**2. */
+
+    // fetch(idUrl)
+    //     // .then(()=>{return(console.log('ok'))})
+    //     .then(response => {
+    //         if (!response.ok) {
+    //             console.log('2-then error')
+    //             throw new Error('2- HTTP error',response.statusText);
+    //         }
+    //         else {
+    //             return response.json(console.log)
+    //         }
+    //     })
+    //     .then(data => console.log('2-then ok', data))
+    //     .catch(() => { return (console.log('2- catch error')) })
+    console.log('promise-study - fetch');
+    const requset = {
+        get(url) {
+            return fetch(url);
+        },
+        post(url, payload) {
+            return fetch(url, {
+                method: 'POST', headers: { 'content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        },
+        patch(url, payload) {
+            return fetch(url, {
+                method: 'PATCH',
+                headers: { 'content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        },
+        delete(url) {
+            return fetch(url, { method: 'DELETE' });
+        }
+    };
+
+
+    const typUrl = 'https://jsonplaceholder.typicode.com/todos';
+
+    requset.get('https://jsonplaceholder.typicode.com/todos/1')
+        .then(response => {
+            if (!response.ok) { throw new Error(response.statusText) };
+            return response.json();
+
+        })
+        .then(todos => console.log('get-1-then', todos))
+        .catch(err => console.error(err));
+
+    requset.post('https://jsonplaceholder.typicode.com/todos', {
+        userId: 1,
+        title: 'JavaScript',
+        completed: false,
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('post1ten', response.status.statusText);
+            }
+            return response.json();
+        })
+        .then(todos => console.log('post-2-then', todos))
+        .catch(err => console.log(err));
+
+
+
+    requset.patch('https://jsonplaceholder.typicode.com/todos/1', {
+        completed: true
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json()
+        })
+        .then(todos => console.log('patch-2-then', todos))
+        .catch(err => console.log(err));
+
+        
+    requset.delete(`${typUrl}/1`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('delete-1-then', response.statusText);
+            }
+            return response.json();
+        })
+        .then(todos => console.log(todos))
+        .catch(err => console.error(err));
+
+
 
     return (
         <div>Promise
