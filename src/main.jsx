@@ -9,7 +9,7 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <App />
     <Mstudy />
+    {/* <App /> */}
   </React.StrictMode>
 );

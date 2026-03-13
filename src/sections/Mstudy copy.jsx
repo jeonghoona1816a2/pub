@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 // import Asyncbasic from "./studys/Asyncbasic";
 // import Loopstatment from "./studys/Loopstatment";
 // import Asyncawaittest from "./studys/Asyncawaittest";
-import Mainlayout from "./src/layout";
+import Tasks from "./studys/Tasks";
 import { Button } from "antd"
 
 export default function Mstudy() {
@@ -16,7 +16,8 @@ export default function Mstudy() {
             {/* <Asyncbasic /> */}
             {/* <Loopstatment /> */}
             {/* <Asyncawaittest /> */}
-            <Mainlayout />
+            <Tasks />
+            <Button>가나다라</Button>
         </div>
     );
 }
