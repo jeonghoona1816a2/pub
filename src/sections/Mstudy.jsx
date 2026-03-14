@@ -4,8 +4,9 @@ import React, { useRef, useState } from "react";
 // import Asyncbasic from "./studys/Asyncbasic";
 // import Loopstatment from "./studys/Loopstatment";
 // import Asyncawaittest from "./studys/Asyncawaittest";
-import Mainlayout from "./src/layout";
-import { Button } from "antd"
+// import Mainlayout from "./src/layout";
+import AppRouter from "./src/AppRouter";
+import { BrowserRouter } from "react-router-dom";
 
 export default function Mstudy() {
 
@@ -16,7 +17,10 @@ export default function Mstudy() {
             {/* <Asyncbasic /> */}
             {/* <Loopstatment /> */}
             {/* <Asyncawaittest /> */}
-            <Mainlayout />
+            <BrowserRouter>
+                <AppRouter />
+            </BrowserRouter>
+
         </div>
     );
 }

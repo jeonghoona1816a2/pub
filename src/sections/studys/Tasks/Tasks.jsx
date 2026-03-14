@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import styles from "./Tasks.module.scss";
 export default function Tasks() {
 
+    const [data, setData] = useState([]);
+
     const TASKS_API_URL = `${import.meta.env.VITE_API_BASE_URL}/tasks`;
     async function getTasks() {
         try {
@@ -15,6 +17,7 @@ export default function Tasks() {
             };
             const result = await response.json();
             console.log(result)
+            setData(result);
         }
         catch (e) {
             console.log(e)
@@ -28,11 +31,26 @@ export default function Tasks() {
 
 
     return (
-        <section className={styles.select}>
-            <div>
-                tasksa
-            </div>
+        <>
 
-        </section>
+            {data.map(task => {
+                return (
+                    <div key={task.id} >
+                        <div>{task.description}</div>
+                        <div>{task.isBillable}</div>
+                        <div>{task.priority}</div>
+                        <div>{task.progress}</div>
+                        <div>{task.projectId}</div>
+                        <div>{task.reporterId}</div>
+                        <div>{task.status}</div>
+                        <div>{task.storyPoints}</div>
+                        <div>{task.taskNo}</div>
+
+                    </div>
+                )
+
+            })}
+
+        </>
     )
 }
