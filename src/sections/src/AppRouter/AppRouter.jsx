@@ -10,7 +10,7 @@ export default function AppRouter() {
             <Routes>
                 <Route path="/" element={<Mainlayout />}>
                     <Route index element={<div><Dashboard /></div>} />
-                    <Route path="/task" element={<Tasks />} />
+                    <Route path="task" element={<Tasks />} />
                 </Route>
 
             </Routes>

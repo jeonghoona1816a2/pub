@@ -17,7 +17,7 @@ export default function Mstudy() {
             {/* <Asyncbasic /> */}
             {/* <Loopstatment /> */}
             {/* <Asyncawaittest /> */}
-            <BrowserRouter>
+            <BrowserRouter basename={import.meta.env.BASE_URL}>
                 <AppRouter />
             </BrowserRouter>
 
