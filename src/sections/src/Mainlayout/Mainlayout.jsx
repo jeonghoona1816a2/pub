@@ -46,6 +46,8 @@ const Mainlayout = () => {
         },
         { key: "8", icon: <TeamOutlined />, label: "부서 관리" },
         { key: "9", icon: <TrophyOutlined />, label: "스킬 관리" },
+        { key: "10", icon: <TrophyOutlined />, label: <Link to="/stepmove">StepMove</Link> },
+        { key: "11", icon: <TrophyOutlined />, label: "simul" },
     ];
 
     // 상세 뷰를 위해 샘플 데이터 항목 추가 (우선순위, 마감일, 설명 등)

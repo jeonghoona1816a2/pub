@@ -1,5 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+import "antd/dist/reset.css";
 import "./main.css";
 import Mstudy from "./sections/Mstudy";
 
