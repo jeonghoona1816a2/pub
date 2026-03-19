@@ -77,6 +77,50 @@ export default function StepMove() {
             <TopshRow gutter={[16, 16]} justify="end" className={styles.select}>
                 <Col span={4}>
                     <Space>
+                        <span>family</span>
+                        <Select
+                            placeholder="family"
+                            style={{ width: 120 }}
+                            options={[
+                                { value: "all", label: "전체" },
+                                { value: "DRAM", label: "DRAM" },
+                                { value: "NAND", label: "NAND" },
+                            ]}
+                        />
+                    </Space>
+                </Col>
+                <Col span={4}>
+                    <Space>
+                        <span>site</span>
+                        <Select
+                            placeholder="검색"
+                            style={{ width: 120 }}
+                            options={[
+                                { value: "all", label: "전체" },
+                                { value: "Icheon", label: "Icheon" },
+                                { value: "Cheongju", label: "Cheongju" },
+
+                            ]}
+                        />
+                    </Space>
+                </Col>
+                <Col span={4}>
+                    <Space>
+                        <span>device</span>
+                        <Select
+                            placeholder="검색"
+                            style={{ width: 120 }}
+                           options={[
+                                { value: "all", label: "전체" },
+                                { value: "UFS", label: "UFS" },
+                                { value: "LPDDR5", label: "LPDDR5" },
+
+                            ]}
+                        />
+                    </Space>
+                </Col>
+                <Col span={4}>
+                    <Space>
                         <span>구분</span>
                         <Select
                             placeholder="검색"
