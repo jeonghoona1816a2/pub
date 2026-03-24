@@ -47,7 +47,8 @@ const Mainlayout = () => {
         { key: "8", icon: <TeamOutlined />, label: "부서 관리" },
         { key: "9", icon: <TrophyOutlined />, label: "스킬 관리" },
         { key: "10", icon: <TrophyOutlined />, label: <Link to="/stepmove">StepMove</Link> },
-        { key: "11", icon: <TrophyOutlined />, label: <Link to="/simul">Simul</Link> },
+        { key: "11", icon: <TrophyOutlined />, label: <Link to="/stepmove2">StepMove2</Link> },
+        { key: "12", icon: <TrophyOutlined />, label: <Link to="/simul">Simul</Link> },
 
     ];
 
@@ -84,7 +85,7 @@ const Mainlayout = () => {
                 </Header>
 
                 {/* 3. 메인 콘텐츠 영역 */}
-                <Content style={{ margin: "16px", overflow: "initial" }}>
+                <Content style={{ margin: "16px", minWidth:"110px", overflow: "initial" }}>
                     <Outlet />
                 </Content>
             </Layout>

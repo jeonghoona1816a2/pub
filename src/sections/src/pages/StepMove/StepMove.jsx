@@ -11,11 +11,25 @@ export default function StepMove() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [shfilters, setShfilters] = useState({
+        family: "all",
+        site: "all",
+        device: "all",
+        category: "all",
+    });
+
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     const FAB_CAPACITY_API_URL = `${API_BASE_URL}/fab-capacity`;
 
     const columnDefs = [
-        { field: "createdAt", headerName: "createdAt" },
+        {
+            field: "createdAt",
+            headerName: "createdAt",
+            valueFormatter: (params) => {
+                if (!params.value) return "";
+                return String(params.value).split("T")[0];
+            },
+        },
         { field: "device", headerName: "device" },
         { field: "fab", headerName: "fab" },
         { field: "family", headerName: "family" },
@@ -36,33 +50,52 @@ export default function StepMove() {
         minWidth: 120,
     };
 
-    const fetchFabCapacities = useCallback(async (signal) => {
-        setLoading(true);
-        setError(null);
+    const fetchFabCapacities = useCallback(
+        async (signal, params) => {
+            setLoading(true);
+            setError(null);
 
-        try {
-            const response = await fetch(FAB_CAPACITY_API_URL, { signal });
+            try {
+                const searchParms = new URLSearchParams();
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error("fab-capacity 조회 실패", {
-                    status: response.status,
-                    body: errorText,
-                });
-                throw new Error(`조회 실패 (${response.status})`);
+                if (params?.family && params.family !== "all") {
+                    searchParms.append("family", params.family);
+                }
+                if (params?.site && params.site !== "all") {
+                    searchParms.append("site", params.site);
+                }
+                if (params?.device && params.device !== "all") {
+                    searchParms.append("device", params.device);
+                }
+
+                const requestUrl = searchParms.toString()
+                    ? `${FAB_CAPACITY_API_URL}?${searchParms.toString()}`
+                    : FAB_CAPACITY_API_URL;
+
+                const response = await fetch(requestUrl, { signal });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("fab-capacity 조회 실패", {
+                        status: response.status,
+                        body: errorText,
+                    });
+                    throw new Error(`조회 실패 (${response.status})`);
+                }
+
+                const result = await response.json();
+                setData(result);
+            } catch (err) {
+                if (err.name === "AbortError") return;
+
+                console.error("fab-capacity fetch 에러:", err);
+                setError(err.message || "데이터 조회 중 오류가 발생했습니다.");
+            } finally {
+                setLoading(false);
             }
-
-            const result = await response.json();
-            setData(result);
-        } catch (err) {
-            if (err.name === "AbortError") return;
-
-            console.error("fab-capacity fetch 에러:", err);
-            setError(err.message || "데이터 조회 중 오류가 발생했습니다.");
-        } finally {
-            setLoading(false);
-        }
-    }, [FAB_CAPACITY_API_URL]);
+        },
+        [FAB_CAPACITY_API_URL]
+    );
 
     useEffect(() => {
         const controller = new AbortController();
@@ -79,8 +112,11 @@ export default function StepMove() {
                     <Space>
                         <span>family</span>
                         <Select
-                            placeholder="family"
                             style={{ width: 120 }}
+                            value={shfilters.family}
+                            onChange={(value) => {
+                                setShfilters((prev) => ({ ...prev, family: value }));
+                            }}
                             options={[
                                 { value: "all", label: "전체" },
                                 { value: "DRAM", label: "DRAM" },
@@ -89,48 +125,66 @@ export default function StepMove() {
                         />
                     </Space>
                 </Col>
+
                 <Col span={4}>
                     <Space>
                         <span>site</span>
                         <Select
-                            placeholder="검색"
                             style={{ width: 120 }}
+                            value={shfilters.site}
+                            onChange={(value) => {
+                                setShfilters((prev) => ({ ...prev, site: value }));
+                            }}
                             options={[
                                 { value: "all", label: "전체" },
                                 { value: "Icheon", label: "Icheon" },
                                 { value: "Cheongju", label: "Cheongju" },
-
                             ]}
                         />
                     </Space>
                 </Col>
+
                 <Col span={4}>
                     <Space>
                         <span>device</span>
                         <Select
-                            placeholder="검색"
                             style={{ width: 120 }}
-                           options={[
+                            value={shfilters.device}
+                            onChange={(value) => {
+                                setShfilters((prev) => ({ ...prev, device: value }));
+                            }}
+                            options={[
                                 { value: "all", label: "전체" },
                                 { value: "UFS", label: "UFS" },
                                 { value: "LPDDR5", label: "LPDDR5" },
-
                             ]}
                         />
                     </Space>
                 </Col>
+
                 <Col span={4}>
                     <Space>
                         <span>구분</span>
                         <Select
-                            placeholder="검색"
                             style={{ width: 120 }}
+                            value={shfilters.category}
+                            onChange={(value) => {
+                                setShfilters((prev) => ({ ...prev, category: value }));
+                            }}
                             options={[{ value: "all", label: "전체" }]}
                         />
                     </Space>
                 </Col>
+
                 <Col span={2}>
-                    <Button>검색</Button>
+                    <Button
+                        onClick={() => {
+                            const controller = new AbortController();
+                            fetchFabCapacities(controller.signal, shfilters);
+                        }}
+                    >
+                        검색
+                    </Button>
                 </Col>
             </TopshRow>
 
@@ -143,7 +197,7 @@ export default function StepMove() {
             </div>
 
             <Row gutter={[16, 16]} className={styles.select}>
-                <div>
+                <div style={{ height: "200px", width: "100%", overflow: "scroll" }}>
                     {loading && <p>로딩 중...</p>}
                     {error && <p>{error}</p>}
                     <pre>{JSON.stringify(data, null, 2)}</pre>
